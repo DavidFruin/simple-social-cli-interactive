@@ -49,10 +49,6 @@ static void cmd_logout(ss_state_t *state, const wizard_answer_t *answers) {
     unlink(path);
     snprintf(path, sizeof(path), "%s/.simple-social-cli/user.json", home);
     unlink(path);
-    snprintf(path, sizeof(path), "%s/.simple-social-tui/jwt.txt", home);
-    unlink(path);
-    snprintf(path, sizeof(path), "%s/.simple-social-tui/user.json", home);
-    unlink(path);
     print_success("Logged out.");
 }
 
