@@ -21,7 +21,7 @@ already built. If you cloned without `--recursive`, run
 
 The built binary is statically linked against the vendored library (no `.so` to
 keep track of), so it works wherever it ends up - copied, symlinked, whatever.
-`sudo make install` puts it on your PATH as `ssic`; `sudo make uninstall`
+`sudo make install` puts it on your PATH as `sswiz`; `sudo make uninstall`
 removes it.
 
 ## Run
@@ -30,7 +30,7 @@ removes it.
 ./simple-social-cli-interactive
 ```
 
-Or, once installed: `ssic`, from anywhere.
+Or, once installed: `sswiz`, from anywhere.
 
 You'll get a prompt. Type a single command word (e.g. `login`, `feed`, `create`, `help`,
 `exit`) and the tool will prompt you for each field it needs, one at a time. Password fields

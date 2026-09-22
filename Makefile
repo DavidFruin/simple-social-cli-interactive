@@ -42,9 +42,9 @@ clean:
 	rm -f $(OBJS) $(BIN)
 
 install: $(BIN)
-	install -m 755 $(BIN) /usr/local/bin/ssic
+	install -m 755 $(BIN) /usr/local/bin/sswiz
 
 uninstall:
-	rm -f /usr/local/bin/ssic
+	rm -f /usr/local/bin/sswiz
 
 .PHONY: all clean check-lib install uninstall
