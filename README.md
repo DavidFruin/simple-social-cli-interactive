@@ -1,18 +1,23 @@
 # Simple Social CLI — Interactive
 
-A wizard-style interactive front end for the Simple Social API. Sibling project to
-`simple-social-cli`: it links against that repo's already-built `lib/libss.so` and shares
-login/session state with it via `~/.simple-social-cli/` — logging in with one tool is visible
-to the other.
+A wizard-style interactive front end for the Simple Social API, built on the same
+library as `simple-social-cli` and `simple-social-tui`. All three read and write the
+same `~/.simple-social-cli/` session state, so logging in with any of them logs you
+in everywhere.
 
-This repo never modifies `simple-social-cli`.
+`simple-social-cli` is vendored in as a git submodule under `vendor/`, not a sibling
+checkout - this repo is self-contained. It never modifies the vendored copy.
 
 ## Build
 
 ```
-cd ../simple-social-cli && make   # build the shared library first, if not already built
-cd ../simple-social-cli-interactive && make
+git clone --recursive https://github.com/DavidFruin/simple-social-cli-interactive.git
+cd simple-social-cli-interactive && make
 ```
+
+`make` builds the vendored `simple-social-cli` library automatically if it isn't
+already built. If you cloned without `--recursive`, run
+`git submodule update --init --recursive` first.
 
 ## Run
 

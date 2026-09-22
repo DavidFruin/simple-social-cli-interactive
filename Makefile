@@ -1,19 +1,29 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -I../simple-social-cli/lib
-LDFLAGS = -L../simple-social-cli/lib -lss -Wl,-rpath,'$$ORIGIN/../simple-social-cli/lib'
+
+# Vendored as a git submodule rather than a sibling checkout, so this repo
+# is self-contained: `git clone --recursive` + `make` is the whole story,
+# no separate simple-social-cli clone required.
+CLI_DIR = vendor/simple-social-cli
+LIBSS   = $(CLI_DIR)/lib/libss.so
+
+CFLAGS  = -Wall -Wextra -O2 -I$(CLI_DIR)/lib
+LDFLAGS = -L$(CLI_DIR)/lib -lss -Wl,-rpath,'$$ORIGIN/$(CLI_DIR)/lib'
 
 SRCS = src/main.c src/repl.c src/wizard.c src/commands.c src/output.c src/input.c
 OBJS = $(SRCS:.c=.o)
 BIN = simple-social-cli-interactive
-LIBSS = ../simple-social-cli/lib/libss.so
 
 all: check-lib $(BIN)
 
 check-lib:
-	@if [ ! -f $(LIBSS) ]; then \
-		echo "error: $(LIBSS) not found."; \
-		echo "Build the sibling project first: (cd ../simple-social-cli && make)"; \
+	@if [ ! -f $(CLI_DIR)/Makefile ]; then \
+		echo "error: $(CLI_DIR) is empty - the submodule wasn't checked out."; \
+		echo "Run: git submodule update --init --recursive"; \
 		exit 1; \
+	fi
+	@if [ ! -f $(LIBSS) ]; then \
+		echo "Building vendored simple-social-cli library..."; \
+		$(MAKE) -C $(CLI_DIR); \
 	fi
 
 $(BIN): $(OBJS)
