@@ -10,10 +10,26 @@ checkout - this repo is self-contained. It never modifies the vendored copy.
 
 ## Build
 
+Install a compiler and the libcurl runtime. On Debian or Ubuntu:
+
 ```
+sudo apt install build-essential libcurl4 pkg-config
+```
+
+(On Ubuntu 24.04 and later the runtime package is `libcurl4t64`, and apt picks
+it if you ask for `libcurl4`.) `pkg-config` is optional. libcurl's dev package
+is not needed, because its headers are vendored.
+
+Then clone and build somewhere you can write to, such as your home directory:
+
+```
+cd ~
 git clone --recursive https://github.com/DavidFruin/simple-social-cli-interactive.git
 cd simple-social-cli-interactive && make
 ```
+
+Don't clone from `/` or another root-owned directory. `git clone` fails there
+with `could not create work tree dir ... Permission denied`.
 
 `make` builds the vendored `simple-social-cli` library automatically if it isn't
 already built. If you cloned without `--recursive`, run
