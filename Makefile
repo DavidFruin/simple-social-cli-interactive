@@ -12,11 +12,11 @@ LIBSS   = $(CLI_DIR)/lib/libss.a
 CFLAGS = -Wall -Wextra -O2 -MMD -MP -I$(CLI_DIR)/lib
 # Static archive linked directly (not -lss + rpath): the built binary ends
 # up a single self-contained file that works wherever it's copied or
-# symlinked, e.g. onto PATH via `make install`. -lcurl still needs
-# vendor/simple-social-cli's own vendor/ dir on the search path, since
-# that's where its vendor-links step puts the libcurl.so symlink dev
-# packages don't always provide.
-LDFLAGS = $(LIBSS) -L$(CLI_DIR)/vendor -lcurl
+# symlinked, e.g. onto PATH via `make install`. libcurl is linked the same
+# way vendor/simple-social-cli does it: pkg-config when the dev package is
+# installed, else the libcurl.so.4 SONAME that the runtime package ships.
+CURL_LIBS = $(shell pkg-config --libs libcurl 2>/dev/null || echo -l:libcurl.so.4)
+LDFLAGS = $(LIBSS) $(CURL_LIBS)
 
 SRCS = src/main.c src/repl.c src/wizard.c src/commands.c src/output.c src/input.c
 OBJS = $(SRCS:.c=.o)
