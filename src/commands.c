@@ -27,6 +27,10 @@ static void cmd_login(ss_state_t *state, const wizard_answer_t *answers) {
     api_set_jwt(jwt);
     api_set_user_id(user_id);
     ss_state_save_jwt(state);
+    // The long-lived half of the session - without it this login would
+    // stop working as soon as the access token aged out.
+    ss_state_set_refresh(state, api_get_refresh_token());
+    ss_state_save_refresh(state);
 
     char email_out[256] = {0};
     char created[32] = {0};
@@ -41,14 +45,11 @@ static void cmd_login(ss_state_t *state, const wizard_answer_t *answers) {
 
 static void cmd_logout(ss_state_t *state, const wizard_answer_t *answers) {
     (void)answers;
+    // Revoke on the server first; removing the local files alone would
+    // leave the session live and still listed as a signed-in device.
+    api_logout();
     ss_state_clear(state);
-    char path[512];
-    const char *home = getenv("HOME");
-    if (!home) home = "/tmp";
-    snprintf(path, sizeof(path), "%s/.simple-social-cli/jwt.txt", home);
-    unlink(path);
-    snprintf(path, sizeof(path), "%s/.simple-social-cli/user.json", home);
-    unlink(path);
+    ss_state_delete_files();
     print_success("Logged out.");
 }
 
