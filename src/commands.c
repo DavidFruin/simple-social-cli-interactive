@@ -160,6 +160,16 @@ static void cmd_create(ss_state_t *state, const wizard_answer_t *answers) {
     const char *media_url_ptr = NULL;
 
     if (answers[1].provided) {
+        // Checked here rather than left to the server: a bad path used to
+        // round-trip a full upload request just to come back as media.php's
+        // generic "No file was selected", which reads like a server problem
+        // rather than a typo in what was typed.
+        if (access(answers[1].text, R_OK) != 0) {
+            char msg[600];
+            snprintf(msg, sizeof(msg), "Media file not found or not readable: %s", answers[1].text);
+            print_error(msg);
+            return;
+        }
         if (api_upload_media_with_id(answers[1].text, media_url, sizeof(media_url), &media_id) != 0) {
             print_error(api_get_last_error());
             return;
