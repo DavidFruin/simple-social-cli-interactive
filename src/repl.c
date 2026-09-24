@@ -48,8 +48,21 @@ void repl_run(ss_state_t *state) {
             printf("\n");
             break;
         }
-        char *cmd_name = trim(line);
-        if (cmd_name[0] == '\0') continue;
+        char *trimmed = trim(line);
+        if (trimmed[0] == '\0') continue;
+
+        // Every command here is answered one field at a time through
+        // wizard_collect() below, not by trailing words on the command line
+        // - so split off just the first word to look up. Without this,
+        // cmd_name was the whole line, "login me@x.com" could never equal
+        // the string "login", and a perfectly valid command typed with an
+        // argument (the way the plain, non-interactive CLI expects it)
+        // reported "Unknown command" - which reads as "this tool doesn't
+        // have that command" when the real problem is just trailing text.
+        char *extra = trimmed;
+        while (*extra && !isspace((unsigned char)*extra)) extra++;
+        if (*extra) { *extra = '\0'; extra++; extra = trim(extra); }
+        char *cmd_name = trimmed;
 
         if (strcmp(cmd_name, "exit") == 0 || strcmp(cmd_name, "quit") == 0) break;
         if (strcmp(cmd_name, "help") == 0) { print_help(); continue; }
@@ -61,6 +74,10 @@ void repl_run(ss_state_t *state) {
         if (!cmd) {
             printf("Unknown command: %s\n", cmd_name);
             printf("Type 'help' for a list of commands.\n");
+            continue;
+        }
+        if (extra[0] != '\0') {
+            printf("'%s' doesn't take arguments on this line - type '%s' by itself and answer the prompts.\n", cmd_name, cmd_name);
             continue;
         }
 
